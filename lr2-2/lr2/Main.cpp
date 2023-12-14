@@ -84,7 +84,7 @@ public:
         while (fabs(_f_n) > _eps)
         {
             //_f_n = pow(-1, _n) * 1 / ((2 * (double)_n + 1) * pow(_x, 2 * _n + 1));
-            _f_n = pow(_x, 2 * _n + 1) / (2 * (double)_n + 1);
+            _f_n = pow(_x, 2 * _n + 1) / (2 * _n + 1);
             _f += _f_n;
             _n++;
         }
@@ -113,7 +113,7 @@ public:
     double recurs_member()
     {
         _x_n_recur = calc_member(_x_n_recur, _n_rec);
-        double current_x_n = _x_n_recur;
+        double current_x_n = _x_n_recur;    
         if (fabs(_x_n_recur) < _eps)
         {
             _n_rec = 0;
@@ -130,22 +130,14 @@ public:
         {
             return _x;
         }
-        return x_n * (pow(x_n, 2) * (2 * double(n) - 1) / (2 * double(n) + 1));
+        return pow(_x, 2 * n + 1) / (2 * (double)n + 1);//x_n * (pow(x_n, 2) * (2 * n - 1) / (2 * n + 1));
         //x_n * (-1) / pow(_x, 2) * ((double)2 * n - 1) / ((double)2 * n + 1);
     }
 
     // Конструктор
     Series3(double x, double eps, double f=0, double f_n=1e+6, int n=0, int n_rec=0):
         _x{x}, _eps{eps}, _x_n_recur{x}, _f{f}, _f_n{f_n}, _n{n}, _n_rec{n_rec}
-    {
-        //_x = x;
-        //_eps = eps;
-        //_f = 0;
-        //_f_n = 1e+6;
-        //_n = 0;
-        //_n_rec = 0;
-        //_x_n_recur = _x;
-    }
+    {}
 
     // Деструктор
     ~Series3()
