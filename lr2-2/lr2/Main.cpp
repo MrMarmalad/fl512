@@ -21,7 +21,7 @@ class Series1
                 f_n = pow(x, 2 * n + 1) / (2 * (double)n + 1);
                 f += f_n;
                 n++;
-                cout << "f_n: " << f_n << endl << "f: " << f << endl << "n: " << n << endl;
+                //cout << "f_n: " << f_n << endl << "f: " << f << endl << "n: " << n << endl;
             }
             cout << "Класс 1:\n";
             cout << "arth(x) = " << f << "\n";
@@ -199,7 +199,7 @@ int main()
     n2.print();
     double x;
     double eps;
-    cout << "Введите x ( область сходимости ряда (-inf, -1] U [1, + inf) )\n";
+    cout << "Введите x ( область сходимости ряда (-1; 1) )\n";
     cin >> x;
     cout << "Введите необходимую точность\n";
     cin >> eps;
