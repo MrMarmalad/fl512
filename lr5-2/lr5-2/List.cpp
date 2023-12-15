@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <iomanip>
+#include <fstream>
+
+using namespace std;
 
 //пустой список
 List::List()
@@ -153,13 +156,6 @@ GameRecord List::getElement()
 GameRecord List::getNext()
 {
 	GameRecord retVal = GameRecord();
-	//if (lastReadedElement == nullptr || lastReadedIndex == -1) {
-	//	cout << "Нет прочитанных ранее элементов" << endl;
-	//}
-	//else if (lastReadedElement->next == nullptr) {
-	//	cout << "Это последний элемент" << endl;
-	//}
-	//else {
 	if (lastReadedElement != nullptr &&
 		lastReadedIndex != -1 &&
 		lastReadedElement->next != nullptr)
@@ -208,7 +204,6 @@ int List::findElemByGenre(string genre) {
 	return -1;
 }
 
-
 List getRecordsYearsBefore(List checkedList, int beforeYear) {
 	List filteredList;
 	GameRecord tmpRecord;
@@ -232,7 +227,7 @@ List getRecordsYearsBefore(List checkedList, int beforeYear) {
 void printList(List& listForPrinting)
 {
 	if (listForPrinting.empty()) {
-		cout << "Структура данных пуста" << endl;
+		cout << "Структура данных пуста" << endl << endl;
 		return;
 	}
 	int index = 0;
@@ -247,19 +242,100 @@ void printList(List& listForPrinting)
 	cout << endl;
 }
 
-ostream& operator<<(ostream& os, List& outList)
-{
-	// TODO: insert return statement here
-}
-
-istream& operator>>(std::istream& in, List& inList)
-{
-	// TODO: insert return statement here
-}
-
 ostream& setup(ostream& stream)
 {
 	stream.setf(ios::left);
 	stream << setw(50);
 	return stream;
+}
+
+ostream& operator<<(ostream& os, List& outList)
+{
+	outList.getElement(0);
+	GameRecord tmpRecord = outList.getElement(0);
+	//setup(os);
+	while (!tmpRecord.empty()) {
+		setup(os) << tmpRecord.name;
+		setup(os) << tmpRecord.genre;
+		setup(os) << tmpRecord.year;
+		tmpRecord = outList.getNext();
+	}
+	return os;
+}
+
+istream& operator>>(std::istream& in, List& inList)
+{
+	string genre, name;
+	int year;
+	while (in >> name >> genre >> year) {
+		inList.insertBefore({ name, genre, year }, inList.length());
+	}
+	return in;
+}
+
+void List::writeToBinary(string fname)
+{
+	std::fstream outStream;
+	outStream.open(fname, fstream::out | fstream::binary | fstream::trunc);
+	if (!outStream) {
+		cout << "Ошибка открытия файла:" + fname << endl;
+		return;
+	}
+	GameRecord tmpRecord = this->getElement(0);
+	string writeString;
+	while (!tmpRecord.empty()) {
+		writeString = tmpRecord.name + " " + tmpRecord.genre + " " + to_string(tmpRecord.year) + "\n";
+		writeString = to_string(writeString.size()) + " " + writeString;
+		outStream.write(writeString.c_str(), writeString.size());
+		//outStream << tmpRecord.name << " " << tmpRecord.genre << " " << tmpRecord.year << "фхфххфхф" << endl;
+		tmpRecord = this->getNext();
+	}
+	outStream.close();
+}
+
+void List::readFromBinary(string fname)
+{
+	std::fstream in;
+	in.open(fname, fstream::in | fstream::binary);
+	
+	if (!in) {
+		cout << "Ошибка открытия файла:" + fname << endl;
+		return;
+	}
+
+	string genre, name;
+	int year, len;
+	
+	while (in >> len >> name >> genre >> year) {
+		this->insertBefore({ name, genre, year }, this->length());
+	}
+}
+
+void List::changeStringBinary(int index, GameRecord changedRecord, string fname)
+{
+	this->changeElem(index, changedRecord);
+	this->writeToBinary(fname);
+}
+
+void List::deleteStringFromBinary(int index, string fname)
+{
+	this->deleteFrom(index);
+	this->writeToBinary(fname);
+}
+
+int List::findFirstGameYearBinary(string fname)
+{
+	this->clearList();
+	this->readFromBinary(fname);
+
+	GameRecord tmpRecord = this->getElement(0);
+	int minYear = tmpRecord.year;
+
+	while (!tmpRecord.empty()) {
+		if (tmpRecord.year < minYear) {
+			minYear = tmpRecord.year;
+		}
+		tmpRecord = this->getNext();
+	}
+	return minYear;
 }

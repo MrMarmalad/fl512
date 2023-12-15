@@ -50,6 +50,9 @@ public:
 
 	void readFromBinary(string fname);
 	void writeToBinary(string fname);
+	void changeStringBinary(int index, GameRecord changedRecord, string fname);
+	void deleteStringFromBinary(int index, string fname);
+	int findFirstGameYearBinary(string fname);
 
 };
 

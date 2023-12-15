@@ -3,8 +3,8 @@
 #include <iostream>
 
 
-bool GameRecord::equal(GameRecord testRecord, bool strict = true) const {
-		if (strict == true) {
+bool GameRecord::equal(GameRecord testRecord, bool strictEq = true) const {
+		if (strictEq == true) {
 			return (
 				this->genre == testRecord.genre &&
 				this->name == testRecord.name &&

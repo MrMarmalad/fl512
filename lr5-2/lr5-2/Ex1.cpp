@@ -18,6 +18,7 @@ std::ostream& operator << (std::ostream& os, const Ex1& ex1) {
 		}
 		os << endl;
 	}
+	return os;
 }
 std::istream& operator >> (std::istream& in, Ex1& ex1) {
 	vector <int> tmpVec;
@@ -30,6 +31,7 @@ std::istream& operator >> (std::istream& in, Ex1& ex1) {
 		ex1.data.push_back(tmpVec);
 		tmpVec = vector<int>();
 	}
+	return in;
 }
 
 

@@ -68,6 +68,31 @@ Queue Queue::operator--(int) {
 	return *this;
 }
 
+void Queue::readFromBinary(string fname)
+{
+	this->queueElems.readFromBinary(fname);
+}
+
+void Queue::writeToBinary(string fname)
+{
+	this->queueElems.writeToBinary(fname);
+}
+
+void Queue::changeStringBinary(int index, GameRecord changedRecord, string fname)
+{
+	this->queueElems.changeStringBinary(index, changedRecord, fname);
+}
+
+void Queue::deleteStringFromBinary(int index, string fname)
+{
+	this->queueElems.deleteStringFromBinary(index, fname);
+}
+
+int Queue::findFirstGameYearBinary(string fname)
+{
+	return this->queueElems.findFirstGameYearBinary(fname);
+}
+
 void printQueue(Queue& queueForPrinting)
 {
 	printList(queueForPrinting.queueElems);
@@ -75,12 +100,14 @@ void printQueue(Queue& queueForPrinting)
 
 ostream& operator<<(ostream& os, Queue& outQueue)
 {
-	// TODO: insert return statement here
+	os << outQueue.queueElems;
+	return os;
 }
 
 istream& operator>>(std::istream& in, Queue& inQueue)
 {
-	// TODO: insert return statement here
+	in >> inQueue.queueElems;
+	return in;
 }
 
 Queue getRecordsYearsBefore(Queue checkedQueue, int beforeYear) {
