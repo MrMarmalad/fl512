@@ -25,32 +25,13 @@
 //сформировать массив из минимальных и максимальных элементов четных строк массива;
 //напечатать сформированный массив;
 //найти и напечатать произведение отрицательных элементов нечетных столбцов исходного массива.
+#include "Ex1.h"
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
 using namespace std;
 
-class Ex1
-{
-public:
-	Ex1(string initFname, int dataSizeX, int dataSizeY);
-	~Ex1();
-private:
-	fstream inout;
-	string curFname;
-	vector<vector<int>> data;
-};
 
-Ex1::Ex1(string initFname, int dataSizeX, int dataSizeY)
-	: curFname{initFname}
-{
-	this->inout.open(initFname);
-	for ()
-}
 
-Ex1::~Ex1()
-{
-	this->inout.close();
+int main() {
+
+	return 1;
 }

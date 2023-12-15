@@ -127,7 +127,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ex1.cpp" />
+    <ClCompile Include="GameRecord.cpp" />
+    <ClCompile Include="List.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Queue.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Ex1.h" />
+    <ClInclude Include="GameRecord.h" />
+    <ClInclude Include="List.h" />
+    <ClInclude Include="Queue.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
