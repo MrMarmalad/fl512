@@ -30,7 +30,11 @@ public:
 	void changeStringBinary(int index, GameRecord changedRecord, string fname);
 	void deleteStringFromBinary(int index, string fname);
 
-	int findFirstGameYearBinary(string fname);
+	GameRecord findFirstGameYearBinary(string fname);
+
+
+	void sort(bool asc);
+	void swap(int indexF, int indexS);
 
 private:
 	List queueElems;

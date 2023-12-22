@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -192,16 +193,17 @@ void List::operator +=(GameRecord newElem) {
 	this->insertBefore(newElem, this->length());
 }
 
-int List::findElemByGenre(string genre) {
+List List::findElemsByGenre(string genre) {
 	listElem* tmpElem = this->back;
+	List result;
 	for (int currentIndex = 0; currentIndex < this->length(); currentIndex++) {
 		if (tmpElem->Data.genre == genre) {
-			return currentIndex;
+			result += tmpElem->Data;
 		}
 		tmpElem = tmpElem->next;
 	}
 
-	return -1;
+	return result;
 }
 
 List getRecordsYearsBefore(List checkedList, int beforeYear) {
@@ -224,21 +226,34 @@ List getRecordsYearsBefore(List checkedList, int beforeYear) {
 	return filteredList;
 }
 
-void printList(List& listForPrinting)
+void printList(List& listForPrinting, bool debugInfo = false)
 {
 	if (listForPrinting.empty()) {
 		cout << "Структура данных пуста" << endl << endl;
 		return;
 	}
 	int index = 0;
-	List::listElem* tmpElem = listForPrinting.back;
-	while (tmpElem->next != nullptr) {
-		tmpElem->Data.printRecord();
-		tmpElem = tmpElem->next;
-		index++;
-	}
+	GameRecord tmpElem;
 
-	tmpElem->Data.printRecord();
+	if (debugInfo) {
+		cout << "Вывод списка" << endl;
+		cout << "Back " << listForPrinting.back << "\tFront " << listForPrinting.front << endl;
+	}
+	
+	auto tmpListEl = listForPrinting.back;
+	while (tmpListEl != nullptr) {
+		if (debugInfo) {
+			cout << tmpListEl->prev << endl;
+		}
+
+		cout << tmpListEl->Data << endl << endl;
+		
+		if (debugInfo) {
+			cout << tmpListEl->next << endl << endl;
+		}
+			
+		tmpListEl = tmpListEl->next;
+	}
 	cout << endl;
 }
 
@@ -255,9 +270,7 @@ ostream& operator<<(ostream& os, List& outList)
 	GameRecord tmpRecord = outList.getElement(0);
 	//setup(os);
 	while (!tmpRecord.empty()) {
-		setup(os) << tmpRecord.name;
-		setup(os) << tmpRecord.genre;
-		setup(os) << tmpRecord.year;
+		setup(os) << tmpRecord;
 		tmpRecord = outList.getNext();
 	}
 	return os;
@@ -265,50 +278,62 @@ ostream& operator<<(ostream& os, List& outList)
 
 istream& operator>>(std::istream& in, List& inList)
 {
-	string genre, name;
-	int year;
-	while (in >> name >> genre >> year) {
-		inList.insertBefore({ name, genre, year }, inList.length());
+	GameRecord tmpRecord;
+
+	while (!in.eof()) {
+		in >> tmpRecord;
+		//if (tmpRecord.equal(inList.back->Data)) continue;
+		inList.insertBefore(tmpRecord, inList.length());
 	}
 	return in;
 }
 
 void List::writeToBinary(string fname)
 {
-	std::fstream outStream;
-	outStream.open(fname, fstream::out | fstream::binary | fstream::trunc);
+	fstream outStream;
+	stringstream ss;
+
+	outStream.open(fname, ios::out | ios::binary | ios::trunc);
 	if (!outStream) {
 		cout << "Ошибка открытия файла:" + fname << endl;
 		return;
 	}
+
 	GameRecord tmpRecord = this->getElement(0);
 	string writeString;
-	while (!tmpRecord.empty()) {
-		writeString = tmpRecord.name + " " + tmpRecord.genre + " " + to_string(tmpRecord.year) + "\n";
-		writeString = to_string(writeString.size()) + " " + writeString;
-		outStream.write(writeString.c_str(), writeString.size());
-		//outStream << tmpRecord.name << " " << tmpRecord.genre << " " << tmpRecord.year << "фхфххфхф" << endl;
-		tmpRecord = this->getNext();
+	//while (!tmpRecord.empty()) {
+	//	ss << tmpRecord << endl;		
+	//	//outStream << tmpRecord.name << " " << tmpRecord.genre << " " << tmpRecord.year << "фхфххфхф" << endl;
+	//	tmpRecord = this->getNext();
+	//}
+	for (int i = 0; i < this->length(); i++) {
+		tmpRecord = this->getElement(i);
+		ss << tmpRecord;
+		if (i < this->length() - 1) {
+			ss << endl;
+		}
 	}
+	writeString = ss.str();
+	outStream.write(writeString.c_str(), writeString.size());
 	outStream.close();
 }
 
 void List::readFromBinary(string fname)
 {
 	std::fstream in;
-	in.open(fname, fstream::in | fstream::binary);
+	in.open(fname, ios::in | ios::binary);
 	
 	if (!in) {
 		cout << "Ошибка открытия файла:" + fname << endl;
 		return;
 	}
-
-	string genre, name;
-	int year, len;
 	
-	while (in >> len >> name >> genre >> year) {
-		this->insertBefore({ name, genre, year }, this->length());
+	GameRecord tmpRec;
+	while (!in.eof()) {
+		in >> tmpRec;
+		this->insertBefore(tmpRec, this->length());
 	}
+	in.close();
 }
 
 void List::changeStringBinary(int index, GameRecord changedRecord, string fname)
@@ -323,19 +348,86 @@ void List::deleteStringFromBinary(int index, string fname)
 	this->writeToBinary(fname);
 }
 
-int List::findFirstGameYearBinary(string fname)
+GameRecord List::findFirstGameYearBinary(string fname)
 {
 	this->clearList();
 	this->readFromBinary(fname);
 
 	GameRecord tmpRecord = this->getElement(0);
-	int minYear = tmpRecord.year;
+	GameRecord retVal = this->getElement(0);
+	//int minYear = tmpRecord.year;
 
 	while (!tmpRecord.empty()) {
-		if (tmpRecord.year < minYear) {
-			minYear = tmpRecord.year;
+		if (tmpRecord < retVal) {
+			retVal = tmpRecord;
 		}
 		tmpRecord = this->getNext();
 	}
-	return minYear;
+	return retVal;
+}
+
+void List::swap(int indexF, int indexS) {
+	auto tmpRecord = this->getElement(indexF);
+	this->changeElem(indexF, this->getElement(indexS));
+	this->changeElem(indexS, tmpRecord);
+}
+
+void List::sort(bool asc) {
+	// Сортировка массива пузырьком
+	for (int i = 0; i < this->length(); i++) {
+		for (int j = 0; j < this->length() - (i + 1); j++) {
+			if (asc) {
+				if (this->getElement(j) > this->getElement(j + 1)) {
+					this->swap(j, j + 1);
+
+				}
+			}
+			else {
+				if (this->getElement(j) < this->getElement(j + 1)) {
+					this->swap(j, j + 1);
+				}
+			}
+
+		}
+	}
+}
+
+bool List::writeToFile(string fname)
+{
+	fstream out;
+	stringstream ss;
+	GameRecord tmpRecord;
+
+	out.open(fname, ios::out);
+	if (!out.is_open()) {
+		cout << "Невозможно открыть файл " << fname << endl;
+		return false;
+	}
+
+	for (int i = 0; i < this->length(); i++) {
+		tmpRecord = this->getElement(i);
+		ss << tmpRecord;
+	}
+	out << ss.str();
+	return true;
+}
+
+bool List::readFromFile(string fname) 
+{
+	fstream in;
+	GameRecord tmpRecord;
+	
+
+	in.open(fname, ios::in);
+	if (!in.is_open()) {
+		cout << "Невозможно открыть файл " << fname << endl;
+		return false;
+	}
+
+	while (!in.eof()) {
+		in >> tmpRecord;
+		*this += tmpRecord;
+	}
+
+	return true;
 }

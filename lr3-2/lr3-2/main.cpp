@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string>
 
+#include <stdio.h>
+#include <conio.h>
+
 using namespace std;
 //вариант 2
 
@@ -64,6 +67,16 @@ struct GameRecord
 	void printRecord() const {
 		cout << this->name << "\t" << this->genre << "\t" << this->year << endl;
 	}
+
+	bool operator > (const GameRecord& comparedRec) const
+	{
+		return this->year > comparedRec.year;
+	}
+
+	bool operator < (const GameRecord& comparedRec) const
+	{
+		return this->year < comparedRec.year;
+	}
 };
 
 
@@ -95,7 +108,7 @@ public:
 
 	int length() const;
 	bool empty() const;
-	int findElemByGenre(string genre);
+	List findElemsByGenre(string genre);
 	List* insertBefore(GameRecord newRecord, int insPlace);
 	List* deleteFrom(int elemIndexToDelete);
 	bool changeElem(int index, GameRecord changedRecord);
@@ -108,6 +121,8 @@ public:
 
 	friend void printList(List& listForPrinting);
 
+	void sort(bool asc = true);
+	void swap(int indexF, int indexS);
 };
 
 //пустой список
@@ -240,7 +255,6 @@ bool List::clearList()
 GameRecord List::getElement(int index)
 {
 	if (index > this->length() - 1 || index < 0) return GameRecord();
-	if (lastReadedIndex == index) return this->lastReadedElement->Data;
 
 	listElem* tmpRecord = this->back;
 	for (int i = 0; i < index; i++) {
@@ -260,12 +274,6 @@ GameRecord List::getElement()
 GameRecord List::getNext()
 {
 	GameRecord retVal = GameRecord();
-	//if (lastReadedElement == nullptr || lastReadedIndex == -1) {
-	//	cout << "Нет прочитанных ранее элементов" << endl;
-	//}
-	//else if (lastReadedElement->next == nullptr) {
-	//	cout << "Это последний элемент" << endl;
-	//}
 	//else {
 	if (lastReadedElement != nullptr &&
 		lastReadedIndex != -1 &&
@@ -303,16 +311,17 @@ void List::operator +=(GameRecord newElem) {
 	this->insertBefore(newElem, this->length());
 }
 
-int List::findElemByGenre(string genre) {
+List List::findElemsByGenre(string genre) {
 	listElem* tmpElem = this->back;
+	List result;
 	for (int currentIndex = 0; currentIndex < this->length(); currentIndex++) {
 		if (tmpElem->Data.genre == genre) {
-			return currentIndex;
+			result += tmpElem->Data;
 		}
 		tmpElem = tmpElem->next;
 	}
 
-	return -1;
+	return result;
 }
 
 
@@ -355,20 +364,49 @@ void printList(List& listForPrinting)
 }
 
 
+void List::swap(int indexF, int indexS) {
+	auto tmpRecord = this->getElement(indexF);
+	this->changeElem(indexF, this->getElement(indexS));
+	this->changeElem(indexS, tmpRecord);
+}
+
+void List::sort(bool asc) {
+	// Сортировка массива пузырьком
+	for (int i = 0; i < this->length(); i++) {
+		for (int j = 0; j < this->length() - (i + 1); j++) {
+			if (asc) {
+				if (this->getElement(j) > this->getElement(j+1)) {
+					this->swap(j, j + 1);
+					
+				}
+			}
+			else {
+				if (this->getElement(j) < this->getElement(j + 1)) {
+					this->swap(j, j + 1);
+				}
+			}
+
+		}
+	}
+}
 
 void listTesting() {
 	
 	cout << "Тестирование списка" << endl;
 	List testList = List();
 	cout << "Добавление элементов" << endl;
-	testList += {"Game1", "Genre1", 1990};
-	testList += {"Game2", "Genre2", 1991};
-	testList += {"Game3", "Genre3", 1992};
-	testList += {"Game7", "Genre7", 2000};
-	testList.insertBefore({ "Game4", "Genre4", 1992 }, 1);
-	testList.insertBefore({ "Game5", "Genre5", 1993 }, 1);
-	testList.insertBefore({ "Game6", "Genre6", 1994 }, 3);
-	testList.insertBefore({ "Game8", "Genre8", 2020 }, testList.length()-1);
+	testList += {"Quake", "Action", 1997};
+	testList += {"StarCraft", "Strategy", 1998};
+	testList += {"Resident Evil 2", "Action", 1998};
+	testList += {"Carmageddon", "Racing", 1996};
+	testList.insertBefore({ "The Legend Of Zelda: Ocarina of Time", "Adventure", 1992 }, 1);
+	testList.insertBefore({ "Tony Hawk's Pro Skater", "Sport", 2002 }, 1);
+	testList.insertBefore({ "SimCity", "Simulator", 1994 }, 3);
+	testList.insertBefore({ "Animal Crossing", "Action", 2001}, testList.length()-1);
+	printList(testList);
+
+	cout << "Сортировка списка" << endl;
+	testList.sort();
 	printList(testList);
 
 	cout << "Удаление элементов" << endl;
@@ -382,20 +420,21 @@ void listTesting() {
 	printList(testList);
 
 	cout << endl << "Поиск по жанру" << endl;
-	cout << testList.findElemByGenre("Genre8") << endl;
-	cout << testList.findElemByGenre("Genre123123") << endl;
+	auto findedRecords = testList.findElemsByGenre("Action");
+	printList(findedRecords);
 
 	cout << "Поиск игр появившихся ранее этого года" << endl;
-	List filteredList = getRecordsYearsBefore(testList, 1995);
+	List filteredList = getRecordsYearsBefore(testList, 2000);
 	printList(filteredList);
 	
 	//очистка списка
 	cout << "Очистка списка" << endl;
 	filteredList.clearList();
 	printList(filteredList);
+	cout << endl;
 
 	cout << "Перегруженный конструктор" << endl;
-	List testList2 = List({ "Game1", "Genre1", 1990 });
+	List testList2 = List({ "Perfect Dark", "Action", 2000 });
 	printList(testList2);
 }
 
@@ -408,7 +447,7 @@ public:
 	~Queue();
 	bool push(GameRecord newElem);
 	GameRecord pop();
-	GameRecord findElemByGenre(string genre);
+	List findElemsByGenre(string genre);
 	bool clearQueue();
 
 	void operator+=(GameRecord newRecord);
@@ -417,6 +456,9 @@ public:
 
 	friend Queue getRecordsYearsBefore(Queue checkedQueue, int beforeYear);
 	friend void printQueue(Queue& queueForPrinting);
+
+	void sort(bool asc = true);
+	void swap(int indexF, int indexS);
 
 private:
 	List queueElems;
@@ -457,20 +499,9 @@ GameRecord Queue::pop()
 	return retVal;
 }
 
-GameRecord Queue::findElemByGenre(string genre)
+List Queue::findElemsByGenre(string genre)
 {
-	GameRecord tmpRecord;
-	GameRecord retVal;
-	List tmpList = List();
-	for (int i = 0; i < this->queueElems.length(); i++) {
-		tmpRecord = this->pop();
-		if (tmpRecord.genre == genre) {
-			retVal = tmpRecord;
-		}
-		tmpList.insertBefore(tmpRecord, tmpList.length());
-	}
-	this->queueElems = tmpList;
-	return retVal;
+	return this->queueElems.findElemsByGenre(genre);
 }
 
 void Queue::operator+=(GameRecord newRecord)
@@ -489,6 +520,14 @@ Queue Queue::operator--(int) {
 	return *this;
 }
 
+void Queue::sort(bool asc) {
+	this->queueElems.sort(asc);
+}
+
+void Queue::swap(int indexF, int indexS) {
+	this->queueElems.swap(indexF, indexS);
+}
+
 void printQueue(Queue& queueForPrinting)
 {
 	printList(queueForPrinting.queueElems);
@@ -503,21 +542,26 @@ void queueTesting() {
 	cout << "Тестирование очереди" << endl;
 	cout << endl << "Добавление элементов" << endl;
 	Queue testQueue = Queue();
-	testQueue += {"Game1", "Genre1", 1990};
-	testQueue += {"Game2", "Genre2", 1991};
-	testQueue += {"Game3", "Genre3", 1992};
-	testQueue += {"Game4", "Genre4", 1993};
-	testQueue.push({ "Game5", "Genre5", 1992 });
-	testQueue.push({ "Game6", "Genre6", 1993 });
-	testQueue.push({ "Game7", "Genre7", 2000 });
-	testQueue.push({ "Game8", "Genre8", 2020 });
 	
+	testQueue += {"StarCraft", "Strategy", 1999};;
+	testQueue += {"Quake", "Action", 1995};
+	testQueue += {"Carmageddon", "Racing", 1996};
+	testQueue += {"Resident Evil 2", "Action", 1998};
+	testQueue.push({ "Animal Crossing", "Action", 1994 });
+	testQueue.push({ "SimCity", "Simulator", 1994 });
+	testQueue.push({ "The Legend Of Zelda: Ocarina of Time", "Adventure", 1992 });
+	testQueue.push({"Tony Hawk's Pro Skater", "Sport", 2002});
+	printQueue(testQueue);
+
+	cout << "Сортировка очереди" << endl;
+	testQueue.sort();
 	printQueue(testQueue);
 
 	cout << "Извлечение элементов" << endl;
 	testQueue.pop().printRecord();
 	testQueue.pop().printRecord();
-
+	cout << endl;
+	
 	printQueue(testQueue);
 
 	cout << "Удаление элементов" << endl;
@@ -525,8 +569,9 @@ void queueTesting() {
 	testQueue--;
 	printQueue(testQueue);
 
-	cout << "Поиск элемента по жанру" << endl;
-	testQueue.findElemByGenre("Genre6").printRecord();
+	cout << "Поиск элементов по жанру" << endl;
+	auto tmpList = testQueue.findElemsByGenre("Action");
+	printList(tmpList);
 	cout << "\n";
 
 	cout << "Поиск записей с годом ранее заданного" << endl;
@@ -541,6 +586,7 @@ void queueTesting() {
 int main() {
 	setlocale(LC_ALL, "rus");
 	listTesting();
+	cout << "================================" << endl;
 	cout << endl << endl;
 	queueTesting();
 	return 1;

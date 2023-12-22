@@ -30,7 +30,7 @@ public:
 
 	int length() const;
 	bool empty() const;
-	int findElemByGenre(string genre);
+	List findElemsByGenre(string genre);
 	List* insertBefore(GameRecord newRecord, int insPlace);
 	List* deleteFrom(int elemIndexToDelete);
 	bool changeElem(int index, GameRecord changedRecord);
@@ -43,17 +43,26 @@ public:
 	GameRecord getNext();
 	GameRecord getPrev();
 
-	friend void printList(List& listForPrinting);
+	friend void printList(List& listForPrinting, bool debugInfo);
 	//
 	friend ostream& operator <<(ostream& os, List& outList);
 	friend istream& operator >> (std::istream& in, List& inList);
+
+
 
 	void readFromBinary(string fname);
 	void writeToBinary(string fname);
 	void changeStringBinary(int index, GameRecord changedRecord, string fname);
 	void deleteStringFromBinary(int index, string fname);
-	int findFirstGameYearBinary(string fname);
+	GameRecord findFirstGameYearBinary(string fname);
 
+	//
+	void swap(int indexF, int indexS);
+	void sort(bool asc = true);
+
+	////
+	bool writeToFile(string fname);
+	bool readFromFile(string fname);
 };
 
 List getRecordsYearsBefore(List checkedList, int beforeYear);

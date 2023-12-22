@@ -46,10 +46,11 @@ string ex1Fname = "Ex1.txt",
 void listTesting() {
 	List testList;
 	fstream inOut;
+
 	//
 	char dir[255];
 	_getcwd(dir, 255);
-	//
+
 	inOut.open(ex2TextFname);
 	if (!inOut) {
 		cout << "Невозможно открыть файл: " << ex2TextFname << endl;
@@ -57,24 +58,33 @@ void listTesting() {
 	}
 	else {
 		inOut >> testList;
-		printList(testList);
+		testList.sort();
+		printList(testList, false);
 		inOut.close();
 	}
 
+	cout << "Запись в бинарь" << endl;
 	testList.writeToBinary(ex2BinFname);
-	printList(testList);
+	printList(testList, false);
 	testList.clearList();
-	printList(testList);
+	printList(testList, false);
 	testList.readFromBinary(ex2BinFname);
-	printList(testList);
+
+	testList.sort();
+	printList(testList, false);
 
 	cout << "Изменение строк" << endl;
-	testList.changeStringBinary(0, { "Game1", "Genre1", 1999 }, ex2BinFname);
-	printList(testList);
+	testList.changeStringBinary(0, { "The Legend Of Zelda: Ocarina of Time", "Action-adventure", 1998 }, ex2BinFname);
+	printList(testList, false);
 
 	cout << "Удаление строки" << endl;
 	testList.deleteStringFromBinary(0, ex2BinFname);
-	printList(testList);
+	printList(testList, false);
+
+	cout << "Поиск по жанру" << endl;
+	auto testList2 = testList.findElemsByGenre("Action");
+	printList(testList2, false);
+	cout << endl;
 
 	cout << "Поиск игры самого раннего года выпуска" << endl;
 	cout << "Самая ранняя игра: " << testList.findFirstGameYearBinary(ex2BinFname) << endl;
@@ -120,7 +130,7 @@ void queueTesting() {
 int main() {
 	setlocale(LC_ALL, "rus");
 	listTesting();
-	queueTesting();
+	//queueTesting();
 
 	return 1;
 }

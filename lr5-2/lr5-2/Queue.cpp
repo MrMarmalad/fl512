@@ -1,6 +1,7 @@
 #include "Queue.h"
 #include "List.h"
 
+
 Queue::Queue()
 	:queueElems{ List() }
 {}
@@ -88,14 +89,14 @@ void Queue::deleteStringFromBinary(int index, string fname)
 	this->queueElems.deleteStringFromBinary(index, fname);
 }
 
-int Queue::findFirstGameYearBinary(string fname)
+GameRecord Queue::findFirstGameYearBinary(string fname)
 {
 	return this->queueElems.findFirstGameYearBinary(fname);
 }
 
 void printQueue(Queue& queueForPrinting)
 {
-	printList(queueForPrinting.queueElems);
+	printList(queueForPrinting.queueElems, false);
 }
 
 ostream& operator<<(ostream& os, Queue& outQueue)
@@ -113,4 +114,12 @@ istream& operator>>(std::istream& in, Queue& inQueue)
 Queue getRecordsYearsBefore(Queue checkedQueue, int beforeYear) {
 	List tmpList = getRecordsYearsBefore(checkedQueue.queueElems, beforeYear);
 	return Queue(tmpList);
+}
+
+void Queue::sort(bool asc) {
+	this->queueElems.sort(asc);
+}
+
+void Queue::swap(int indexF, int indexS) {
+	this->queueElems.swap(indexF, indexS);
 }
