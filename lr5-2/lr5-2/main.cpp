@@ -63,6 +63,8 @@ void listTesting() {
 		inOut.close();
 	}
 
+	testList.sort();
+
 	cout << "Запись в бинарь" << endl;
 	testList.writeToBinary(ex2BinFname);
 	printList(testList, false);
@@ -108,6 +110,8 @@ void queueTesting() {
 		inOut.close();
 	}
 
+	testQueue.sort();
+
 	testQueue.writeToBinary(ex2BinFname);
 	printQueue(testQueue);
 	testQueue.clearQueue();
@@ -130,7 +134,7 @@ void queueTesting() {
 int main() {
 	setlocale(LC_ALL, "rus");
 	listTesting();
-	//queueTesting();
+	queueTesting();
 
 	return 1;
 }

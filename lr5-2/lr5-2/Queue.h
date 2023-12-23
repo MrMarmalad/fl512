@@ -33,7 +33,7 @@ public:
 	GameRecord findFirstGameYearBinary(string fname);
 
 
-	void sort(bool asc);
+	void sort(bool asc = true);
 	void swap(int indexF, int indexS);
 
 private:
