@@ -1,4 +1,5 @@
 #include "List.h"
+#include "Utils.h"
 
 #include <iostream>
 #include <iomanip>
@@ -257,18 +258,10 @@ void printList(List& listForPrinting, bool debugInfo = false)
 	cout << endl;
 }
 
-ostream& setup(ostream& stream)
-{
-	stream.setf(ios::left);
-	stream << setw(50);
-	return stream;
-}
-
 ostream& operator<<(ostream& os, List& outList)
 {
 	outList.getElement(0);
 	GameRecord tmpRecord = outList.getElement(0);
-	//setup(os);
 	while (!tmpRecord.empty()) {
 		setup(os) << tmpRecord;
 		tmpRecord = outList.getNext();
@@ -282,7 +275,6 @@ istream& operator>>(std::istream& in, List& inList)
 
 	while (!in.eof()) {
 		in >> tmpRecord;
-		//if (tmpRecord.equal(inList.back->Data)) continue;
 		inList.insertBefore(tmpRecord, inList.length());
 	}
 	return in;
@@ -301,11 +293,7 @@ void List::writeToBinary(string fname)
 
 	GameRecord tmpRecord = this->getElement(0);
 	string writeString;
-	//while (!tmpRecord.empty()) {
-	//	ss << tmpRecord << endl;		
-	//	//outStream << tmpRecord.name << " " << tmpRecord.genre << " " << tmpRecord.year << "τυτυυτυτ" << endl;
-	//	tmpRecord = this->getNext();
-	//}
+
 	for (int i = 0; i < this->length(); i++) {
 		tmpRecord = this->getElement(i);
 		ss << tmpRecord;

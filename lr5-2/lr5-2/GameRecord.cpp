@@ -65,8 +65,6 @@ std::istream& operator >> (std::istream& in, GameRecord& gm)
 
 	if ((name == " ") || (genre == " ") || (strYear == " ")) return in;
 
-	//cout << name << "\t" << genre << "\t" << strYear << endl;
-
 	try
 	{
 		year = stoi(strYear);

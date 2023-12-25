@@ -132,10 +132,12 @@
     <ClCompile Include="List.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Queue.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ex1.h" />
     <ClInclude Include="GameRecord.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Queue.h" />
   </ItemGroup>

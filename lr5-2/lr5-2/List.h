@@ -66,4 +66,3 @@ public:
 };
 
 List getRecordsYearsBefore(List checkedList, int beforeYear);
-ostream& setup(ostream& stream);
